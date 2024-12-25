@@ -69,8 +69,8 @@
           playerDiv.innerHTML = `
                     <input id="${player}-name" type="text" value="${object.name}" style="text-align: center; font-size: 20px; font-weight: bold; background: none; border: none;">
                     <p>슬롯: <span id="${player}-number">0 / 6</span></p>
-                    <button id="${player}-slot" onclick="slot('${player}')">장전</button>
-                    <button id="${player}-shoot" onclick="shoot('${player}')" disabled>발사</button>
+                    <button id="${player}-slot" onclick="slot('${player}')" style="width: 75px; height: 50px;">장전</button>
+                    <button id="${player}-shoot" onclick="shoot('${player}')" style="width: 75px; height: 50px;" disabled>발사</button>
                 `;
           playersDiv.appendChild(playerDiv);
         }
