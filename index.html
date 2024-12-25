@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>러시안 룰렛</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f0f0f0;
+      }
+      .container {
+        text-align: center;
+      }
+      .player {
+        margin: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      button {
+        margin: 5px;
+        padding: 5px 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>러시안 룰렛</h1>
+      <div id="players"></div>
+      <button onclick="resetGame()">게임 리셋</button>
+    </div>
+
+    <script>
+      let players = {};
+
+      function assignNumbers() {
+        if (Object.keys(players).length === 0) {
+          players = {};
+        }
+
+        for (let i = 1; i <= 4; i++) {
+          const nameText = document.getElementById(`Player ${i}-name`);
+
+          players[`Player ${i}`] = {};
+
+          if (nameText) {
+            players[`Player ${i}`]["name"] = nameText.value;
+          } else {
+            players[`Player ${i}`]["name"] = `Player ${i}`;
+          }
+          players[`Player ${i}`]["bulletSlot"] = Math.floor(Math.random() * 6) + 1;
+          players[`Player ${i}`]["currentSlot"] = 0;
+        }
+      }
+
+      function createPlayerElements() {
+        const playersDiv = document.getElementById("players");
+
+        playersDiv.innerHTML = "";
+        for (const [player, object] of Object.entries(players)) {
+          const playerDiv = document.createElement("div");
+          playerDiv.className = "player";
+          playerDiv.innerHTML = `
+                    <input id="${player}-name" type="text" value="${object.name}" style="text-align: center; font-size: 20px; font-weight: bold; background: none; border: none;">
+                    <p>슬롯: <span id="${player}-number">0 / 6</span></p>
+                    <button id="${player}-slot" onclick="slot('${player}')">장전</button>
+                    <button id="${player}-shoot" onclick="shoot('${player}')" disabled>발사</button>
+                `;
+          playersDiv.appendChild(playerDiv);
+        }
+      }
+
+      function slot(player) {
+        const numberSpan = document.getElementById(`${player}-number`);
+        const slotButton = document.getElementById(`${player}-slot`);
+        const buttonSpan = document.getElementById(`${player}-shoot`);
+
+        players[player].currentSlot += 1;
+        numberSpan.textContent = `${players[player].currentSlot} / 6`;
+
+        slotButton.disabled = true;
+
+        const gunLoadAudio = new Audio("./gun-load.mp3");
+        gunLoadAudio.addEventListener("ended", () => {
+          buttonSpan.disabled = false;
+        });
+        gunLoadAudio.play();
+      }
+
+      function shoot(player) {
+        const nameText = document.getElementById(`${player}-name`);
+        const numberSpan = document.getElementById(`${player}-number`);
+        const slotButton = document.getElementById(`${player}-slot`);
+        const shootButton = document.getElementById(`${player}-shoot`);
+
+        const isDead = players[player].currentSlot === players[player].bulletSlot;
+
+        if (isDead) {
+          nameText.value += " 💀";
+          new Audio("./gun-shot.mp3").play();
+        } else {
+          new Audio("./gun-dry.mp3").play();
+        }
+
+        if (isDead) {
+          slotButton.disabled = true;
+          shootButton.disabled = true;
+        } else {
+          slotButton.disabled = false;
+          shootButton.disabled = true;
+        }
+      }
+
+      function resetGame() {
+        assignNumbers();
+        createPlayerElements();
+      }
+
+      // 초기 게임 설정
+      resetGame();
+    </script>
+  </body>
+</html>
